@@ -43,6 +43,7 @@ do
             flage=1
     esac
 done
+
 #check arguements
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
@@ -52,6 +53,7 @@ then
     rm -f /tmp/$$.*
     exit
 fi
+
 #get filepath
 shift $(($OPTIND - 1))
 filepath=$1
@@ -77,7 +79,7 @@ fi
 # -c
 if [ $flagc = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then
         echo -c:
     fi
@@ -87,7 +89,7 @@ fi
 # -2
 if [ $flag2 = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -2:
     fi
@@ -97,7 +99,7 @@ fi
 # -r
 if [ $flagr = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -r:
     fi
@@ -107,7 +109,7 @@ fi
 # -F
 if [ $flagF = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -F:
     fi
@@ -117,7 +119,7 @@ fi
 # -t
 if [ $flagt = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -t:
     fi
@@ -132,9 +134,9 @@ then
         do
             let "sum = $sum + $each_number"
         done
-        echo -e $each_ip"\t"$sum >> tempfilepath
+        echo -e $each_ip"\t"$sum >> $tempfilepath
     done
-    cat tempfilepath | sort -n -k 2 -r | head -$n
+    cat $tempfilepath | sort -n -k 2 -r | head -$n
 fi
 
 #-e
@@ -142,7 +144,7 @@ exec 1>&6
 blacklistpath=
 if [ $flage = 1 ]
 then
-    if [ "$2" = "" ]
+    if [ x"$2" = x ]
     then
         blacklistpath=dns.blacklist.txt
     else
