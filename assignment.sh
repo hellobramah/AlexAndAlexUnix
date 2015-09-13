@@ -17,6 +17,12 @@ while getopts "n:c2rFte" opt;
 do
     case $opt in
         n) 
+            re='^[0-9]+$'
+            if ! [[ "$OPTARG" =~ $re ]]
+            then
+                echo Error: incorrect arguement "n"
+                exit 
+            fi
             n=$OPTARG
             flagn=1;;
         c) 
@@ -24,34 +30,24 @@ do
         2) 
             flag2=1;;
         r) 
-            if [ "$flagn" = "0" ] 
-            then
-                n=1000000
-            fi
             flagr=1;;
         F) 
-            if [ "$flagn" = "0" ] 
-            then
-                n=1000000
-            fi
             flagF=1;;
         t) 
             flagt=1;;
         e)
-            efunctionstdout=$(mktemp -t $$.XXX)
-            exec 1>$efunctionstdout
-            flage=1
+            flage=1;;
     esac
 done
+
 #check arguements
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    exec 1>&6
-    echo incorrect arguements
-    rm -f /tmp/$$.*
+    echo Error: incorrect arguements
     exit
 fi
+
 #get filepath
 shift $(($OPTIND - 1))
 filepath=$1
@@ -73,11 +69,18 @@ then
     done
 fi
 
+#If the -e operation is specified, then redirect the stdout to a tempfile
+if [ $flage = 1 ]
+then
+    efunctionstdout=$(mktemp -t $$.XXX)
+    exec 1>$efunctionstdout
+fi      
+
 #process arguements
 # -c
 if [ $flagc = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then
         echo -c:
     fi
@@ -87,7 +90,7 @@ fi
 # -2
 if [ $flag2 = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -2:
     fi
@@ -97,7 +100,7 @@ fi
 # -r
 if [ $flagr = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -r:
     fi
@@ -107,7 +110,7 @@ fi
 # -F
 if [ $flagF = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -F:
     fi
@@ -117,7 +120,7 @@ fi
 # -t
 if [ $flagt = 1 ]
 then
-    if [ $sum > 2 ]
+    if [ $sum != 1 ]
     then 
         echo -t:
     fi
@@ -132,9 +135,9 @@ then
         do
             let "sum = $sum + $each_number"
         done
-        echo -e $each_ip"\t"$sum >> tempfilepath
+        echo -e $each_ip"\t"$sum >> $tempfilepath
     done
-    cat tempfilepath | sort -n -k 2 -r | head -$n
+    cat $tempfilepath | sort -n -k 2 -r | head -$n
 fi
 
 #-e
@@ -142,7 +145,7 @@ exec 1>&6
 blacklistpath=
 if [ $flage = 1 ]
 then
-    if [ "$2" = "" ]
+    if [ x"$2" = x ]
     then
         blacklistpath=dns.blacklist.txt
     else
@@ -165,7 +168,7 @@ then
         then
             echo $line | awk '{ print $1 "\t" $2 }'
         else
-            echo $line | awk '{ print $1 "\t" $2 "\t Blacklisted" }'
+            echo $line | awk '{ print $1 "\t" $2 "\tBlacklisted" }'
         fi
     done < $efunctionstdout
 fi
