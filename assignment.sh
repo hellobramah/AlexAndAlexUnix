@@ -59,7 +59,7 @@ then
     fi
 fi
 
-#if no file name is given or the file not exist read from stdin
+#if no file name is given or the file does not exist read from stdin
 if [ $fileflag = 0 ]
 then
     filepath=$(mktemp -t $$.XXX)
@@ -151,6 +151,12 @@ then
     else
         blacklistpath=$2
     fi
+    if ! [ -f $blacklistpath ]
+    then 
+        echo The blacklist file does not exist.
+        exit 
+    fi
+
     blacklist=$(cat $blacklistpath)
     blockedipaddresses=
     for each_domain in $blacklist
