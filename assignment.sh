@@ -114,7 +114,7 @@ then
     then 
         echo -F:
     fi
-    cut -f 9 -d ' ' $filepath | grep -E 4[0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{print $2 "\t" $1}'
+    cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{print $2 "\t" $1}'
 fi
 
 # -t
