@@ -69,6 +69,7 @@ then
     done
 fi
 
+#If the -e operation is specified, then redirect the stdout to a tempfile
 if [ $flage = 1 ]
 then
     efunctionstdout=$(mktemp -t $$.XXX)
