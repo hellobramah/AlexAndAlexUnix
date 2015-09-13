@@ -17,6 +17,12 @@ while getopts "n:c2rFte" opt;
 do
     case $opt in
         n) 
+            re='^[0-9]+$'
+            if ! [[ "$OPTARG" =~ $re ]]
+            then
+                echo Error: incorrect arguement "n"
+                exit 
+            fi
             n=$OPTARG
             flagn=1;;
         c) 
@@ -24,23 +30,13 @@ do
         2) 
             flag2=1;;
         r) 
-            if [ "$flagn" = "0" ] 
-            then
-                n=1000000
-            fi
             flagr=1;;
         F) 
-            if [ "$flagn" = "0" ] 
-            then
-                n=1000000
-            fi
             flagF=1;;
         t) 
             flagt=1;;
         e)
-            efunctionstdout=$(mktemp -t $$.XXX)
-            exec 1>$efunctionstdout
-            flage=1
+            flage=1;;
     esac
 done
 
@@ -48,9 +44,7 @@ done
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    exec 1>&6
-    echo incorrect arguements
-    rm -f /tmp/$$.*
+    echo Error: incorrect arguements
     exit
 fi
 
@@ -74,6 +68,12 @@ then
         echo $line >> $filepath
     done
 fi
+
+if [ $flage = 1 ]
+then
+    efunctionstdout=$(mktemp -t $$.XXX)
+    exec 1>$efunctionstdout
+fi      
 
 #process arguements
 # -c
@@ -167,7 +167,7 @@ then
         then
             echo $line | awk '{ print $1 "\t" $2 }'
         else
-            echo $line | awk '{ print $1 "\t" $2 "\t Blacklisted" }'
+            echo $line | awk '{ print $1 "\t" $2 "\tBlacklisted" }'
         fi
     done < $efunctionstdout
 fi
