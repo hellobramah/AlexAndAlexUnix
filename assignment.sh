@@ -20,7 +20,7 @@ do
             re='^[0-9]+$'
             if ! [[ "$OPTARG" =~ $re ]]
             then
-                echo Error: incorrect arguement "n"
+                echo Error: incorrect arguement "n" >&2
                 exit 
             fi
             n=$OPTARG
@@ -44,7 +44,7 @@ done
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    echo Error: incorrect arguements
+    echo Error: incorrect arguements >&2
     exit
 fi
 
@@ -59,7 +59,7 @@ then
     fi
 fi
 
-#if no file name is given or the file not exist read from stdin
+#if no file name is given or the file does not exist read from stdin
 if [ $fileflag = 0 ]
 then
     filepath=$(mktemp -t $$.XXX)
@@ -114,7 +114,7 @@ then
     then 
         echo -F:
     fi
-    cut -f 9 -d ' ' $filepath | grep -E 4[0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{print $2 "\t" $1}'
+    cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{print $2 "\t" $1}'
 fi
 
 # -t
@@ -151,6 +151,12 @@ then
     else
         blacklistpath=$2
     fi
+    if ! [ -f $blacklistpath ]
+    then 
+        echo The blacklist file does not exist. >&2
+        exit 
+    fi
+
     blacklist=$(cat $blacklistpath)
     blockedipaddresses=
     for each_domain in $blacklist
