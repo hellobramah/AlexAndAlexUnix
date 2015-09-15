@@ -41,7 +41,7 @@ do
 		#Check to see if the argument passed along with -n matches the regular expression, if it does not give an error
             if ! [[ "$OPTARG" =~ $re ]]
             then
-                echo Error: incorrect arguement "n": Please enter a number in
+                echo Error: incorrect arguement "n": Please enter a number in >&2
                 exit 
             fi
 		#if the argument passed along with n fits the regular expression equate it to the variable n to be able to declare the number of records expected
@@ -68,7 +68,7 @@ done
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    echo "Error: incorrect arguements: please supply either -c|-2|-r|-F|-t as an argument"
+    echo "Error: incorrect arguements: please supply either -c|-2|-r|-F|-t as an argument" >&2
     exit
 fi
 
@@ -177,7 +177,7 @@ then
     fi
     if ! [ -f $blacklistpath ]
     then 
-        echo The blacklist file does not exist.
+        echo The blacklist file does not exist. >&2
         exit 
     fi
 
