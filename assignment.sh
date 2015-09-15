@@ -31,13 +31,21 @@ while getopts "n:c2rFte" opt;
 do
     case $opt in
         n) 
-		# create a regular expression that consists of a single character in the range between 0 and 9 and assert its position at end of the string
+		# create a regular expression that consists of the following rules
+		#^ assert position at start of the string
+                #0-9 a single character in the range between 0 and 9
+		#+ Between one and unlimited times, as many times as possible
+		#$ assert position at end of the string
+		
             re='^[0-9]+$'
+		#Check to see if the argument passed along with -n matches the regular expression, if it does not give an error
             if ! [[ "$OPTARG" =~ $re ]]
             then
-                echo Error: incorrect arguement "n"
+                echo Error: incorrect arguement "n": Please enter a number in
                 exit 
             fi
+		#if the argument passed along with n fits the regular expression equate it to the variable n to be able to declare the number of records expected
+
             n=$OPTARG
             flagn=1;;
         c) 
