@@ -31,6 +31,7 @@ while getopts "n:c2rFte" opt;
 do
     case $opt in
         n) 
+		# create a regular expression that consists of a single character in the range between 0 and 9 and assert its position at end of the string
             re='^[0-9]+$'
             if ! [[ "$OPTARG" =~ $re ]]
             then
