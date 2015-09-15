@@ -204,7 +204,6 @@ then
         else
             typeflag=0
         fi
-#        continue
         if [ x"$match" = x ]
         then
             if [ $typeflag = 0 ]
