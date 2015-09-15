@@ -20,7 +20,7 @@ do
             re='^[0-9]+$'
             if ! [[ "$OPTARG" =~ $re ]]
             then
-                echo Error: incorrect arguement "n"
+                echo Error: incorrect arguement "n" >&2
                 exit 
             fi
             n=$OPTARG
@@ -44,7 +44,7 @@ done
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    echo Error: incorrect arguements
+    echo Error: incorrect arguements >&2
     exit
 fi
 
@@ -153,7 +153,7 @@ then
     fi
     if ! [ -f $blacklistpath ]
     then 
-        echo The blacklist file does not exist.
+        echo The blacklist file does not exist. >&2
         exit 
     fi
 
