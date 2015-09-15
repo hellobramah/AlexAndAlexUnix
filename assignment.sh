@@ -1,5 +1,17 @@
 #!/bin/bash
-flagn=0
+
+# flagn sets -n: this argument is to declare the number of results 
+# flagc sets -c: this argument is to show which IP address makes the most number of connection attempts
+# flag2 sets -2: this argument is to show which address makes the most number of successful attempts
+# flagr sets -r: this argument is to show what the most common results codes and where they come from
+# flagF sets -F: this argument is to show the most common result codes that indicate failure (no auth, not found etc) and where they come from
+# flagt sets -t: this argument is to show which IP number get the most bytes sent to them
+# flage sets -e: this argument implements the optional feature to show which IP address is blacklisted
+# fileflag this argument is used for file processing for checking if a file exists, has been supplied at command line and for reading of a file
+
+#declare flags for each argument and initialize them to zero
+
+flagn=0 
 flagc=0
 flag2=0
 flagr=0
@@ -7,6 +19,8 @@ flagF=0
 flagt=0
 flage=0
 fileflag=0
+
+# set n to a default value of one that there may be at least one ip value displayed, n is not allowed to be zero
 n=1
 
 #record stdout
@@ -17,6 +31,7 @@ while getopts "n:c2rFte" opt;
 do
     case $opt in
         n) 
+		# create a regular expression that consists of a single character in the range between 0 and 9 and assert its position at end of the string
             re='^[0-9]+$'
             if ! [[ "$OPTARG" =~ $re ]]
             then
@@ -40,16 +55,17 @@ do
     esac
 done
 
-#check arguements
+#check arguements at least -c|-2|-r|-F|-t must be given, if not that is an error condition.
+#to check this we create a sum variable which is a sum of $flagc, $flag2, $flagr,$flagF, $flagt if sum = 0 then it means that neither -c|-2|-r|-F|-t have been passed as an argument and this is an error condition
 let "sum = $flagc + $flag2 + $flagr + $flagF + $flagt"
 if [ $sum = 0 ]       
 then 
-    echo Error: incorrect arguements
+    echo "Error: incorrect arguements: please supply either -c|-2|-r|-F|-t as an argument"
     exit
 fi
 
-#get filepath
-shift $(($OPTIND - 1))
+#get filepath 
+shift $(($OPTIND - 1)) # this removes all other arguments so that $1 points to the file path
 filepath=$1
 if [ x"$filepath" != x"-" ]
 then 
