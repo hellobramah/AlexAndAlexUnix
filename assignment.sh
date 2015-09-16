@@ -127,7 +127,7 @@ then
         echo -2:
     fi
 #   cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ 2" | sort | uniq -c | sort -n -r | head -$n | awk '{print $2 "\t" $1}'
-   cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ 2" | sort | uniq -c | sort -n -r | head -$n | awk '{printf "%s\t%10s\n", $2, $1}'
+   cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ [2,3]" | sort | uniq -c | sort -n -r | head -$n | awk '{printf "%s\t%10s\n", $2, $1}'
 fi
 
 # -r
@@ -137,7 +137,14 @@ then
     then 
         echo -r:
     fi
-    cut -f 9 -d ' ' $filepath | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
+    #cut -f 9 -d ' ' $filepath | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
+    codes=$(cut -f 9 -d ' ' $filepath | sort | uniq -c | sort -n -r | awk '{ print $2 }')
+    tempfile=$(mktemp -t $$.XXX)
+    for each_code in $codes
+    do
+        echo $each_code | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$1}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) >> $tempfile
+    done
+    cat $tempfile | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
 fi
 
 # -F
@@ -147,7 +154,14 @@ then
     then 
         echo -F:
     fi
-    cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
+    #cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
+    codes=$(cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | awk '{ print $2 }')
+    tempfile=$(mktemp -t $$.XXX)
+    for each_code in $codes
+    do
+        echo $each_code | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$1}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) >> $tempfile
+    done
+    cat $tempfile | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
 fi
 
 # -t
