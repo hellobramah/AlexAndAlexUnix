@@ -108,9 +108,6 @@ fi
 #we use grep to search the file for patterns that match the regular expressions passed to the grep command
 #we use cut to print out sections from each line, we use the -f option followed by a number option to show which field we want to select for printing and the -d option to show what delimiter to use for selection 
 
-
-
-
 # -c
 if [ $flagc = 1 ]
 then
