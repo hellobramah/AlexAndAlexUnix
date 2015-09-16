@@ -118,7 +118,8 @@ then
     then
         echo -c:
     fi
-    cut -f 1 -d ' ' $filepath | sort | uniq -c | sort -n -r| head -$n | awk '{print $2 "\t" $1}' 
+#    cut -f 1 -d ' ' $filepath | sort | uniq -c | sort -n -r| head -$n | awk '{print $2 "\t" $1}' 
+    cut -f 1 -d ' ' $filepath | sort | uniq -c | sort -n -r| head -$n | awk '{printf "%s\t%10s\n",$2,$1}' 
 fi
 
 # -2
@@ -128,7 +129,8 @@ then
     then 
         echo -2:
     fi
-    cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ 2" | sort | uniq -c | sort -n -r | head -$n | awk '{print $2 "\t" $1}'
+#   cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ 2" | sort | uniq -c | sort -n -r | head -$n | awk '{print $2 "\t" $1}'
+   cut -f 1,9 -d ' ' $filepath | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ 2" | sort | uniq -c | sort -n -r | head -$n | awk '{printf "%s\t%10s\n", $2, $1}'
 fi
 
 # -r
@@ -138,7 +140,7 @@ then
     then 
         echo -r:
     fi
-    cut -f 9 -d ' ' $filepath | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) | head -$n | awk '{print $2 "\t" $1}'
+    cut -f 9 -d ' ' $filepath | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq ) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
 fi
 
 # -F
@@ -148,7 +150,7 @@ then
     then 
         echo -F:
     fi
-    cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{print $2 "\t" $1}'
+    cut -f 9 -d ' ' $filepath | grep -E [4,5][0-9]{2} | sort | uniq -c | sort -n -r | head -1 | awk '{print "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\ "$2}' | grep -f - <(cut -f 1,9 -d ' ' $filepath | sort | uniq) | head -$n | awk '{printf "%s\t%s\n", $2, $1}'
 fi
 
 # -t
@@ -173,7 +175,7 @@ then
         done
         echo -e $each_ip"\t"$sum >> $tempfilepath
     done
-    cat $tempfilepath | sort -n -k 2 -r | head -$n
+    cat $tempfilepath | sort -n -k 2 -r | head -$n | awk '{ printf "%s\t%10s\n", $1, $2}'
 fi
 
 #-e
@@ -209,11 +211,29 @@ then
     while read line
     do
         match=$(echo $line | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' | grep -f - <(echo $blockedipaddresses))
+        typeflag=
+        tem='^[0-9]+\.'
+        if [[ "$line" =~ $tem ]]
+        then
+            typeflag=1
+        else
+            typeflag=0
+        fi
         if [ x"$match" = x ]
         then
-            echo $line | awk '{ print $1 "\t" $2 }'
+            if [ $typeflag = 0 ]
+            then
+                echo $line | awk '{ printf "%s\t%s\n",$1, $2 }'
+            else
+                echo $line | awk '{ printf "%s\t%10s\n",$1, $2 }'
+            fi
         else
-            echo $line | awk '{ print $1 "\t" $2 "\tBlacklisted" }'
+            if [ $typeflag = 0 ]
+            then
+                echo $line | awk '{ printf "%s\t%s\tBlacklisted\n",$1, $2}'
+            else
+                echo $line | awk '{ printf "%s\t%10s\tBlacklisted\n",$1, $2}'
+            fi
         fi
     done < $efunctionstdout
 fi
