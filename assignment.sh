@@ -100,7 +100,14 @@ then
     exec 1>$efunctionstdout
 fi      
 
-#process arguements
+#Understanding the sort and uniq options
+#the first sort enables uniq to properly find out and count
+#uniq -c counts unique instances
+#the second sort sorts numerically in reverse order
+#head [n] prints the first n lines when n is supplied as an argument, without n it prints the first 10 lines with a [-n] value it means print all but the last n lines
+#we use grep to search the file for patterns that match the regular expressions passed to the grep command
+#we use cut to print out sections from each line, we use the -f option followed by a number option to show which field we want to select for printing and the -d option to show what delimiter to use for selection 
+
 # -c
 if [ $flagc = 1 ]
 then
@@ -144,6 +151,8 @@ then
 fi
 
 # -t
+# Iterate through the file summing the number of bytes generated for a particular IP sum them and display/print them
+
 if [ $flagt = 1 ]
 then
     if [ $sum != 1 ]
@@ -167,6 +176,8 @@ then
 fi
 
 #-e
+#find the blacklist file, prompt the user if it does not exist
+
 exec 1>&6
 blacklistpath=
 if [ $flage = 1 ]
@@ -182,6 +193,7 @@ then
         echo The blacklist file does not exist. >&2
         exit 
     fi
+# associate IPs with relevant blacklisted domains and tag them for printing
 
     blacklist=$(cat $blacklistpath)
     blockedipaddresses=
